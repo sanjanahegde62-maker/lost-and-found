@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" href="sample.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body class="auth-page">
+    <div class="auth-wrapper">
+        <div class="auth-left">
+            <h1>Lost & Found Portal</h1>
+            <p>Report lost items, find belongings, and reconnect owners with their valuables.</p>
+        </div>
+
+        <div class="auth-container">
+            <h3>Login</h3>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Username" autocomplete="username">
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+
+            <button type="button" onclick="login()">Login</button>
+            <p class="auth-link">New user? <a href="register.html">Create an account</a></p>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.opacity = "1";
+            setTimeout(() => toast.style.opacity = "0", 2200);
+        }
+
+        function login() {
+            const user = {
+                username: document.getElementById("username").value.trim(),
+                password: document.getElementById("password").value
+            };
+
+            if (!user.username || !user.password) {
+                showToast("Please enter username and password");
+                return;
+            }
+
+            fetch("http://localhost:5001/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(user)
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error("Invalid credentials");
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    localStorage.setItem("user", JSON.stringify(data));
+                    showToast("Login successful");
+                    setTimeout(() => window.location.href = "items.html", 600);
+                })
+                .catch(err => {
+                    console.log(err);
+                    showToast("Invalid username or password");
+                });
+        }
+    </script>
+</body>
+
+</html>

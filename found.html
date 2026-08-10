@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Sanjana Hegde">
+    <meta name="description" content="Report a found campus item">
+    <title>Report Found Item</title>
+    <link rel="icon" href="sample.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body>
+    <div class="found-container form-card">
+        <h2>Report Found Item</h2>
+        <form id="itemForm">
+            <fieldset>
+                <legend>Item found info</legend>
+
+                <label for="itemName">Item name</label>
+                <input type="text" name="itemName" id="itemName" required>
+
+                <label for="category">Category</label>
+                <select name="category" id="category" required>
+                    <option value="">Select</option>
+                    <option>Electronics</option>
+                    <option>ID card</option>
+                    <option>Keys</option>
+                    <option>Books</option>
+                    <option>Other</option>
+                </select>
+
+                <label for="location">Location found</label>
+                <input type="text" name="location" id="location" placeholder="eg. Canteen, Library, Block A" required>
+
+                <label for="date">Date found</label>
+                <input type="date" name="dateFound" id="date" required>
+
+                <label for="person">Your name</label>
+                <input type="text" id="person" required>
+
+                <label for="description">Description / outlook</label>
+                <textarea rows="7" id="description" placeholder="eg. black Samsung phone with blue case" name="description" required></textarea>
+
+                <label for="image">Upload picture</label>
+                <input type="file" id="image" accept="image/*">
+
+                <label for="contact">Contact</label>
+                <input type="text" id="contact" required>
+            </fieldset>
+        </form>
+
+        <div class="form-actions">
+            <button type="button" id="submitBtn">Submit</button>
+            <button type="button" class="secondary-btn" onclick="window.location.href='items.html'">Back</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (!user) {
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("person").value = user?.username || "";
+
+        document.getElementById("submitBtn").addEventListener("click", function () {
+            const itemObj = {
+                itemName: document.getElementById("itemName").value.trim(),
+                category: document.getElementById("category").value,
+                location: document.getElementById("location").value.trim(),
+                dateReported: document.getElementById("date").value,
+                reportedBy: document.getElementById("person").value.trim(),
+                description: document.getElementById("description").value.trim(),
+                status: "found",
+                contact: document.getElementById("contact").value.trim(),
+                image: null
+            };
+
+            if (!itemObj.itemName || !itemObj.category || !itemObj.location || !itemObj.dateReported || !itemObj.reportedBy || !itemObj.description || !itemObj.contact) {
+                showToast("Please fill all details");
+                return;
+            }
+
+            const file = document.getElementById("image").files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    itemObj.image = reader.result;
+                    sendRequest(itemObj);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendRequest(itemObj);
+            }
+        });
+
+        function sendRequest(itemObj) {
+            fetch("http://localhost:5001/addItem", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(itemObj)
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed");
+                    return res.text();
+                })
+                .then(() => {
+                    showToast("Found item reported");
+                    setTimeout(() => window.location.href = "items.html", 700);
+                })
+                .catch(err => {
+                    console.log(err);
+                    showToast("Backend is not working");
+                });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.opacity = "1";
+            setTimeout(() => toast.style.opacity = "0", 2200);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Sanjana Hegde">
+    <meta name="description" content="View lost and found items reported around the campus">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items</title>
+    <link rel="icon" href="sample.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo-section">
+            <h2>Lost & Found Portal</h2>
+        </div>
+        <div class="nav-actions">
+            <button onclick="window.location.href='lost.html'">Report Lost Item</button>
+            <button onclick="window.location.href='found.html'">Report Found Item</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="stats-container">
+        <div class="stat-box">
+            <h3 id="totalCount">0</h3>
+            <p>Total Items</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="lostCount">0</h3>
+            <p>Lost Items</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="foundCount">0</h3>
+            <p>Found Items</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="claimedCount">0</h3>
+            <p>Claimed Items</p>
+        </div>
+    </div>
+
+    <div class="report-container">
+        <label for="reported">Select category:</label>
+        <select id="reported">
+            <option value="all">All categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="ID card">ID card</option>
+            <option value="Keys">Keys</option>
+            <option value="Books">Books</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label for="statusItem">Status:</label>
+        <select id="statusItem">
+            <option value="all">All status</option>
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+            <option value="claimed">Claimed</option>
+        </select>
+
+        <input type="text" id="searchInput" placeholder="Search items...">
+    </div>
+
+    <div class="filter-container">
+        <button onclick="filterStatus('lost', this); rippleEffect(event)">Lost</button>
+        <button onclick="filterStatus('found', this); rippleEffect(event)">Found</button>
+        <button onclick="filterStatus('all', this); rippleEffect(event)">All</button>
+        <button onclick="filterStatus('claimed', this); rippleEffect(event)">Claimed</button>
+    </div>
+
+    <div class="item-containers"></div>
+    <div id="toast"></div>
+
+    <div id="matchModal" class="match-modal">
+        <div class="match-content">
+            <span id="closeMatch">&times;</span>
+            <h2>Best Matches</h2>
+            <div id="matchResults"></div>
+        </div>
+    </div>
+
+    <div id="mapModal" class="map-modal">
+        <div class="map-box">
+            <span id="closeMap">&times;</span>
+            <h2 id="mapHeading">Item Location</h2>
+            <iframe
+                id="mapFrame"
+                title="Item location map"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin">
+            </iframe>
+        </div>
+    </div>
+
+    <div id="editModal" class="match-modal">
+        <div class="match-content edit-content">
+            <span id="closeEdit">&times;</span>
+            <h2>Edit Item</h2>
+            <form id="editForm" class="edit-form">
+                <input type="hidden" id="editId">
+
+                <label for="editItemName">Item name</label>
+                <input type="text" id="editItemName" required>
+
+                <label for="editCategory">Category</label>
+                <select id="editCategory" required>
+                    <option>Electronics</option>
+                    <option>ID card</option>
+                    <option>Keys</option>
+                    <option>Books</option>
+                    <option>Other</option>
+                </select>
+
+                <label for="editLocation">Location</label>
+                <input type="text" id="editLocation" required>
+
+                <label for="editDescription">Description</label>
+                <textarea id="editDescription" rows="5" required></textarea>
+
+                <label for="editContact">Contact</label>
+                <input type="text" id="editContact" required>
+
+                <div class="form-actions">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" class="secondary-btn" id="cancelEdit">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="code.js"></script>
+</body>
+
+</html>
